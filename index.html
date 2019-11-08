@@ -12,12 +12,10 @@
 // <![CDATA[
 attribute vec4 col;
 attribute vec4 col2;
-
 attribute vec2 pos;
   
 // --> Pass to Fragment Shader
 varying vec4 variableC;
-
 void main() {
     variableC = col;
     gl_Position = vec4(pos, 1.0, 1.0);
@@ -30,7 +28,6 @@ void main() {
 #ifdef GL_ES
 precision highp float;
 #endif
-
 // <-- Receive from Vertex Shader
 varying vec4 variableC;
                        
@@ -41,11 +38,8 @@ void main() {
 </script>
 
 <script type="text/javascript">
-
 // <![CDATA[
-
 "use strict";
-
 //// All of the following code was written by David A. Madore and extended slightly by Unconst.
 //// Full credit goes to David.
 ////   (<URL: http://www.madore.org/~david/ >),
@@ -54,10 +48,8 @@ void main() {
 ////   is used elsewhere, but this is not a legal requirement,
 ////   just a polite request.)
 //// It comes with no warranty whatsoever, of course.
-
 // Coordinates of the roots (these are fixed):
 var roots = new Array();
-
 function createRoots() {
     function rootFirstKind(i0, i1, s0, s1) {
         var rt = [0, 0, 0, 0, 0, 0, 0, 0];
@@ -92,7 +84,6 @@ function createRoots() {
         return 0;
     });
 }
-
 function sqnorm(a) {
     var ret = 0;
     for ( var i=0 ; i<8 ; i++ ) {
@@ -101,7 +92,6 @@ function sqnorm(a) {
     }
     return ret;
 }
-
 function dotprod(a, b) {
     var ret = 0;
     for ( var i=0 ; i<8 ; i++ ) {
@@ -109,7 +99,6 @@ function dotprod(a, b) {
     }
     return ret;
 }
-
 function sqdist(a, b) {
     var ret = 0;
     for ( var i=0 ; i<8 ; i++ ) {
@@ -118,15 +107,12 @@ function sqdist(a, b) {
     }
     return ret;
 }
-
 // List of edges (an edge connects each even entry of this array
 // to the following):
 var edges;
 var colidx;
-
 function createEdges() {
     var edges0 = new Array();
-
     for ( var a=0 ; a<roots.length ; a++ ) {
         for ( var b=a+1 ; b<roots.length ; b++ ) {
             if ( sqdist(roots[a], roots[b]) == 8 ) {
@@ -137,7 +123,6 @@ function createEdges() {
     }
     edges = new Uint16Array(edges0);
 }
-
 var gaussianStore = null;
 function gaussian() {  // Generate a Gaussian variable by Box-Muller.
     if ( gaussianStore == null ) {
@@ -151,13 +136,11 @@ function gaussian() {  // Generate a Gaussian variable by Box-Muller.
         return ret;
     }
 }
-
 // The two 8-vectors determining the projection to a plane,
 // plus the two 8-vectors determining the direction of motion:
 // these should be normed and orthogonal and motion should be orthogonal.
 var projMatrix = new Array();
 var colProj = new Array();
-
 function gramSchmidt() { // Make projMatrix normed and orthogonal.
     var ortho = [[], [0], [0], [0,1,2]];
     for ( var k=0 ; k<ortho.length ; k++ ) {
@@ -173,7 +156,6 @@ function gramSchmidt() { // Make projMatrix normed and orthogonal.
             projMatrix[k][i] /= d;
     }
 }
-
 function chooseProjectionRandom() {
     projMatrix[0] = new Array(8);
     projMatrix[1] = new Array(8);
@@ -187,7 +169,6 @@ function chooseProjectionRandom() {
     }
     gramSchmidt();
 }
-
 function modifyProjection() {
     for ( var k=0 ; k<8 ; k++ ) {
         projMatrix[0][k] += projMatrix[2][k]*0.01;
@@ -197,11 +178,8 @@ function modifyProjection() {
     }
     gramSchmidt();
 }
-
 var rootProj;  // Projection of the roots (in canvas coordinates)
 var color;  // colours (in size 4)
-
-
 var edgeProj;
 function computeProjections() {
     if ( typeof(rootProj)==="undefined" ) { 
@@ -251,12 +229,10 @@ function computeProjections() {
 //       edgeProj[2*n+1] = b;
 //     }
 }
-
 var canvas;
 var gl;
 var shaderProg;
  
-
 function drawLines(buffers) {  // Draw the 6720 edges.
   
     // Set the edges as the indices
@@ -272,16 +248,13 @@ function drawLines(buffers) {  // Draw the 6720 edges.
     gl.bufferData(gl.ARRAY_BUFFER, color, gl.STATIC_DRAW);
     gl.vertexAttribPointer(shaderProg.col, 1, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(shaderProg.col);
-
     gl.drawElements(gl.LINES, edges.length, gl.UNSIGNED_SHORT, 0);
 }
-
 function drawPoints() {  // Draw points.
 }
-
 function initGl() {
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(0.95, 0.95, 0.95, 1.);
+    gl.clearColor(1, 1, 1, 1.);
     gl.enable(gl.SAMPLE_COVERAGE);
     // gl.enable(gl.LINE_SMOOTH);
     // gl.enable(gl.BLEND);
@@ -313,13 +286,11 @@ function initGl() {
     //gl.bindBuffer(gl.ARRAY_BUFFER, pointBuf);
     //gl.enableVertexAttribArray(shaderProg.pos);
 }
-
 function computeAndDraw(buffers) {
     gl.clear(gl.COLOR_BUFFER_BIT);
     computeProjections();
     drawLines(buffers);
 }
-
 function onLoad() {
     canvas = document.getElementById("canvas");
     if ( typeof(canvas.getContext) != "function" ) {
@@ -347,29 +318,50 @@ function onLoad() {
     };
     update();
 }
-
 // ]]>
-
 </script>
 
 <style type="text/css">
 /* <![CDATA[ */
 #thenode { font-size: .83em; }
 #explanations { font-size: .83em; }
+ .absoluteCenter {
+ /* Must manually set width/height */
+ width:800px;
+ height:500px;
+
+ /* The magic centering code */
+ margin:auto;
+ position:absolute;
+ top:0;bottom:0; /* Aligns Vertically - Remove for Horizontal Only */
+ left:0;right:0; /* Aligns Horizontally - Remove for Vertical Only  */
+
+ /* Prevent div from overflowing main window */
+ max-width:100%;
+ max-height:100%;
+ overflow:auto;
+}
+
+/* IE 7 and Below */
+:first-child+html .absoluteCenter,
+* html .absoluteCenter {
+ /* Place code here to override all above values, and add IE friendly centering */
+}
 /* ]]> */
 </style>
 
 </head>
 
+
+
+
 <body onload="onLoad()">
+  
+<div class="absoluteCenter">
+  <canvas id="canvas" width="600" height="600" margin="auto">
+  </canvas>
+</div>
 
-<canvas id="canvas" width="600" height="600">
-</canvas>
-
-<footer>
-<hr />
-
-</footer>
 
 
 </body>
