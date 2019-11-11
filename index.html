@@ -6,19 +6,19 @@
 
 <meta charset="utf-8" />
 
-<title>BitTensor</title>
+<title>BitTensor</title><!DOCTYPE html>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 // <![CDATA[
-attribute vec4 col;
-attribute vec4 col2;
+attribute vec2 col;
 attribute vec2 pos;
   
 // --> Pass to Fragment Shader
 varying vec4 variableC;
 void main() {
-    variableC = col;
-    gl_Position = vec4(pos, 1.0, 1.0);
+    //variableC = vec4(col, 0.8, 0.7);
+    variableC = vec4(col, 1, 0.9);
+    gl_Position = vec4(pos, 1.0, 1.5);
 }
 // ]]>
 </script>
@@ -196,15 +196,15 @@ function computeProjections() {
       
       rootProj[2*n] = a;
       rootProj[2*n+1] = b;
-      color[2*n+0] = 0.7;
-      color[2*n+1] = 0.01;
+      color[2*n+0] = 1;
+      color[2*n+1] = 0.02;
       color[2*n+2] = 0.6
       color[2*n+3] = 0.9;
       
       color[2*n+4] = 0;
-      color[2*n+5] = 0.9;
-      color[2*n+6] = 0.1
-      color[2*n+7] = 0.5;
+      color[2*n+5] = 0;
+      color[2*n+6] = 0
+      color[2*n+7] = 0;
     }
   
     
@@ -254,7 +254,7 @@ function drawPoints() {  // Draw points.
 }
 function initGl() {
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.clearColor(1, 1, 1, 1.);
+    gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.SAMPLE_COVERAGE);
     // gl.enable(gl.LINE_SMOOTH);
     // gl.enable(gl.BLEND);
@@ -327,7 +327,7 @@ function onLoad() {
 #explanations { font-size: .83em; }
  .absoluteCenter {
  /* Must manually set width/height */
- width:900px;
+ width:600px;
  height:700px;
 
  /* The magic centering code */
@@ -358,10 +358,10 @@ function onLoad() {
 <body onload="onLoad()">
   
 <div class="absoluteCenter">
-  <canvas id="canvas" width="600" height="600" margin="auto">
+  <canvas id="canvas" width="600" height="600" >
   </canvas>
 </div>
-
+  
 
 
 </body>
