@@ -1,11 +1,8 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
 <head>
-
 <meta charset="utf-8" />
-
 <title>BitTensor</title><!DOCTYPE html>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
@@ -17,7 +14,7 @@ attribute vec2 pos;
 varying vec4 variableC;
 void main() {
     //variableC = vec4(col, 0.8, 0.7);
-    variableC = vec4(col, 1, 0.9);
+    variableC = vec4(0, col, 0.9);
     gl_Position = vec4(pos, 1.0, 1.5);
 }
 // ]]>
@@ -36,6 +33,12 @@ void main() {
 }
 // ]]>
 </script>
+  
+<style>
+  #canvas {
+  width: 600px;
+}
+</style>
 
 <script type="text/javascript">
 // <![CDATA[
@@ -196,8 +199,8 @@ function computeProjections() {
       
       rootProj[2*n] = a;
       rootProj[2*n+1] = b;
-      color[2*n+0] = 1;
-      color[2*n+1] = 0.02;
+      color[2*n+0] = 0;
+      color[2*n+1] = 0.5;
       color[2*n+2] = 0.6
       color[2*n+3] = 0.9;
       
@@ -314,7 +317,7 @@ function onLoad() {
     var update = function() {
         computeAndDraw(buffers);
         modifyProjection();
-        window.setTimeout(update, 40);
+        window.setTimeout(update, 30);
     };
     update();
 }
@@ -327,8 +330,8 @@ function onLoad() {
 #explanations { font-size: .83em; }
  .absoluteCenter {
  /* Must manually set width/height */
- width:600px;
- height:700px;
+ width:1024px;
+ height:1024px;
 
  /* The magic centering code */
  margin:auto;
@@ -353,16 +356,13 @@ function onLoad() {
 </head>
 
 
-
-
 <body onload="onLoad()">
   
 <div class="absoluteCenter">
-  <canvas id="canvas" width="600" height="600" >
+  <canvas id="canvas" width="2048" height="2048" >
   </canvas>
 </div>
   
-
 
 </body>
 
