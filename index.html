@@ -4,6 +4,53 @@
 <head>
 <meta charset="utf-8" />
 <title>BitTensor</title><!DOCTYPE html>
+  
+<script id="vertex-shader_circle" type="x-shader/x-vertex">
+// <![CDATA[
+  uniform vec2 u_resolution;
+  attribute vec2 a_position;
+  attribute vec2 a_center;
+  attribute float a_radius;
+
+  varying vec2 center;
+  varying vec2 resolution;
+  varying float radius;
+   
+  void main() {
+    vec2 clipspace = a_position / u_resolution * 2.0 - 1.0;
+    gl_Position = vec4(clipspace * vec2(1, -1), 0, 1);
+
+    radius = a_radius;
+    center = a_center;
+    resolution = u_resolution;
+  }
+// ]]>
+</script>
+
+<script id="fragment-shader_circle" type="x-shader/x-fragment">
+// <![CDATA[
+ precision mediump float;
+
+  varying vec2 center;
+  varying vec2 resolution;
+  varying float radius;
+
+  void main() {
+    vec4 color0 = vec4(0.0, 0.0, 0.0, 0.0);
+
+    float x = gl_FragCoord.x;
+    float y = resolution[1] - gl_FragCoord.y;
+
+    float dx = center[0] - x;
+    float dy = center[1] - y;
+    float distance = sqrt(dx*dx + dy*dy);
+
+    if ( distance < radius )
+      gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
+    else 
+      gl_FragColor = color0;
+// ]]>
+</script>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 // <![CDATA[
@@ -258,7 +305,73 @@ function drawLines(buffers) {  // Draw the 6720 edges.
 }
 function drawPoints() {  // Draw points.
 }
-function initGl() {
+  
+function initGlCircle(canvas, gl) {
+    var v = document.getElementById("vertex-shader").textContent;
+    var f = document.getElementById("fragment-shader").textContent;
+    
+    var vs = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vs, v);
+    gl.compileShader(vs);
+    var fs = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fs, f);
+    gl.compileShader(fs);
+    var shaderProgCircle = gl.createProgram();
+    
+    gl.useProgram(shaderProgCircle);
+     
+  
+    var ATTRIBUTES = 5;
+    var j = 0;
+    var data = [];
+    var circle = {x: 50, y: 50, r: 450};
+
+    data[j++] = (circle.x - circle.r);
+    data[j++] = (circle.y - circle.r);
+    data[j++] = circle.x;
+    data[j++] = circle.y;
+    data[j++] = circle.r;
+
+    data[j++] = (circle.x + (1 + Math.sqrt(2)) * circle.r);
+    data[j++] = circle.y - circle.r;
+    data[j++] = circle.x;
+    data[j++] = circle.y;
+    data[j++] = circle.r;
+
+    data[j++] = (circle.x - circle.r);
+    data[j++] = (circle.y + (1 + Math.sqrt(2)) * circle.r);
+    data[j++] = circle.x;
+    data[j++] = circle.y;
+    data[j++] = circle.r;
+
+    var dataBuffer = new Float32Array(data);
+  
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bufferData(
+        gl.ARRAY_BUFFER, 
+        dataBuffer,
+        gl.STATIC_DRAW);
+
+    var resolutionLocation = gl.getUniformLocation(shaderProgCircle, "u_resolution");
+    gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+
+    var positionLocation = gl.getAttribLocation(shaderProgCircle, "a_position");
+    var centerLocation = gl.getAttribLocation(shaderProgCircle, "a_center");
+    var radiusLocation = gl.getAttribLocation(shaderProgCircle, "a_radius");
+
+    
+    gl.enableVertexAttribArray(positionLocation);
+    gl.enableVertexAttribArray(centerLocation);
+    gl.enableVertexAttribArray(radiusLocation);
+
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, ATTRIBUTES * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(centerLocation, 2, gl.FLOAT, false, ATTRIBUTES * Float32Array.BYTES_PER_ELEMENT, 8);
+    gl.vertexAttribPointer(radiusLocation, 1, gl.FLOAT, false, ATTRIBUTES * Float32Array.BYTES_PER_ELEMENT, 16);
+
+    gl.drawArrays(gl.TRIANGLES, 0, data.length/ATTRIBUTES);
+}
+function initGl(canvas, gl) {
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.SAMPLE_COVERAGE);
@@ -279,6 +392,8 @@ function initGl() {
     gl.attachShader(shaderProg, fs);
     gl.linkProgram(shaderProg);
     gl.useProgram(shaderProg);
+  
+  
     shaderProg.fs = fs;
     shaderProg.vs = vs;
     shaderProg.col = gl.getAttribLocation(shaderProg, "col");
@@ -315,7 +430,8 @@ function onLoad() {
     }
     createRoots();
     createEdges();
-    var buffers = initGl();
+    // initGlCircle(canvas, gl);
+    var buffers = initGl(canvas, gl);
     chooseProjectionRandom();
     var update = function() {
         computeAndDraw(buffers);
@@ -362,18 +478,24 @@ function onLoad() {
  /* Place code here to override all above values, and add IE friendly centering */
 }
 /* ]]> */
+.right {
+  position: relative;
+  left: 55%;
+  top: 55%;
+  font-family: "Times New Roman", Times, serif;
+}
 </style>
 
 </head>
 
-
-
-
 <body onload="onLoad()">
   
 <div class="absoluteCenter">
-  <canvas id="canvas" width="2048" height="2048" >
-  </canvas>
+   <div class="right">
+   <h1>BitTensor</h1>
+   </div>
+   <canvas id="canvas" width="2048" height="2048" >
+   </canvas>
 </div>
   
 
